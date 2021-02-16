@@ -1,26 +1,55 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import { postData } from '../utils/apiRequest'
+
+const url = `${process.env.REACT_APP_SERVER_URL}/login`
 
 export const SignIn = ({ checkButtonClick }) => {
-  
+  const [user, setUser] = useState('')
+
   const handleClick = () => {
     checkButtonClick()
   }
-  const handleSubmit = event => {
+
+  const handleSubmit = async event => {
     event.preventDefault()
+    try {
+      await postData(url, user)
+    } catch (error) {
+      throw Error(error)
+    }
   }
+
+  const handleChange = event => {
+    const { value, name } = event.target
+    setUser({
+      ...user,
+      [name]: value
+    })
+  }
+
   return (
     <Container>
       <form onSubmit={handleSubmit}>
         <p className='welcome'>Welcome Back</p>
-        <input type='email' placeholder='Email' name='email' />
-        <input type='password' placeholder='Password' name='password' />
+        <input
+          type='email'
+          placeholder='Email'
+          name='email'
+          onChange={handleChange}
+        />
+        <input
+          type='password'
+          placeholder='Password'
+          name='password'
+          onChange={handleChange}
+        />
         <input type='submit' value='Sign In' />
       </form>
       <div className='text-wrapper'>
         <p>
           Do not have an Account? Please{' '}
-          <a onClick={() => handleClick()}>Sign Up</a>
+          <span onClick={() => handleClick()}>Sign Up</span>
         </p>
       </div>
     </Container>
@@ -42,12 +71,13 @@ const Container = styled.div`
     align-items: center;
 
     input {
-      width: 500px;
+      width: 100%;
       padding: 1.5em;
       margin-bottom: 1em;
       text-align: left;
       border-radius: 8px;
     }
+
     input[type='submit'] {
       color: #fff;
       background: #f52929;
@@ -75,7 +105,7 @@ const Container = styled.div`
       color: #fff;
       font-weight: 500;
 
-      a {
+      span {
         color: #f52929;
         cursor: pointer;
       }

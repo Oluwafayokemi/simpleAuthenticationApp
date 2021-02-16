@@ -1,4 +1,3 @@
-import logo from './logo.svg'
 import styled from 'styled-components'
 import { Authenticate } from './Authenticate'
 import background from './image/home.jpg'

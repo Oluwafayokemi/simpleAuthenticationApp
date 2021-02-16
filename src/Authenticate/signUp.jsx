@@ -1,7 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import { postData } from '../utils/apiRequest'
+
+const url = `${process.env.REACT_APP_SERVER_URL}/signup`
 
 export const SignUp = ({ checkButtonClick }) => {
+  const [user, setUser] = useState({})
+
   const handleFocus = event => {
     event.target.name === 'date' && (event.currentTarget.type = 'date')
   }
@@ -14,46 +19,74 @@ export const SignUp = ({ checkButtonClick }) => {
   }
 
   const handleClick = async () => {
-    console.log(checkButtonClick, '##############')
     await checkButtonClick()
   }
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault()
+    try {
+      const response = await postData(url, user)
+      console.log(response, '######################')
+    } catch (error) {
+      throw Error(error)
+    }
   }
+
+  const handleChange = event => {
+    const { value, name } = event.target
+    setUser({
+      ...user,
+      [name]: value
+    })
+  }
+
   return (
     <Container>
       <form onSubmit={handleSubmit}>
         <p className='sign-up'>Sign Up</p>
-        <input type='text' placeholder='First Name' name='firstName' required />
-        <input type='text' placeholder='Last Name' name='lastName' required />
-        <input type='email' placeholder='Email' name='email' required />
+        <input
+          type='text'
+          placeholder='First Name'
+          name='firstName'
+          required
+          onChange={handleChange}
+        />
+        <input
+          type='text'
+          placeholder='Last Name'
+          name='lastName'
+          required
+          onChange={handleChange}
+        />
+        <input
+          type='email'
+          placeholder='Email'
+          name='email'
+          required
+          onChange={handleChange}
+        />
         <input
           type='text'
           placeholder='Date of Birth'
           id='date'
-          name='date'
+          name='dateOfBirth'
           onFocus={handleFocus}
           onBlur={handleBlur}
+          onChange={handleChange}
         />
         <input
           type='password'
           placeholder='Password'
           name='password'
           required
-        />
-        <input
-          type='password'
-          placeholder='Confirm Passwod'
-          name='password'
-          required
+          onChange={handleChange}
         />
         <input type='submit' value='Sign Up' />
       </form>
       <div className='text-wrapper'>
         <p>
           Already have an account? Please{' '}
-          <a onClick={() => handleClick()}>Sign in</a>
+          <span onClick={() => handleClick()}>Sign in</span>
         </p>
       </div>
     </Container>
@@ -69,13 +102,13 @@ const Container = styled.div`
   form {
     max-width: max-content;
     margin: 0 auto;
-    padding-top: 8em;
+    padding-top: 3em;
     display: flex;
     flex-direction: column;
     align-items: center;
 
     input {
-      width: 500px;
+      width: 100%;
       padding: 1.5em;
       margin-bottom: 1em;
       text-align: left;
@@ -108,7 +141,7 @@ const Container = styled.div`
       color: #fff;
       font-weight: 500;
 
-      a {
+      span {
         color: #f52929;
         cursor: pointer;
       }
